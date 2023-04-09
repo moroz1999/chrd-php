@@ -7,6 +7,9 @@ class Converter
     public function convert($source, $destination)
     {
         $imageData = $this->loadImage($source);
+        if (!imageistruecolor($imageData)) {
+            imagepalettetotruecolor($imageData);
+        }
         $resultImageData = imagecreatetruecolor(imagesx($imageData), imagesy($imageData));
 
         imagecopy($resultImageData, $imageData, 0, 0, 0, 0, imagesx($imageData), imagesy($imageData));
