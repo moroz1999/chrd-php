@@ -1,4 +1,6 @@
 {
+  "name": "moroz1999/chrd-php",
+  "description": "PHP-based CLI converter from PNG to CHR$ format",
   "require": {
     "vanilla/garden-cli": "^3.1",
     "ext-gd": "*"
