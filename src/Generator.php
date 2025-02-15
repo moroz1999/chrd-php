@@ -5,37 +5,33 @@ namespace Chrd;
 class Generator
 {
     private $colorType = 9;
-    private $header = 'chr$';
+    private const HEADER = 'chr$';
 
-    public function generate($width, $height, $pixels, $attributes)
+    public function generate(int $width, int $height, array $pixels, array $attributes)
     {
-        $charWidth = $width / 8;
-        $charHeight = $height / 8;
-
-        $bytes = $this->header;
-        $pointer = strlen($this->header);
-
-        $bytes[$pointer] = chr((int)$charWidth);
-        $pointer++;
-        $bytes[$pointer] =  chr((int)$charHeight);
-        $pointer++;
-        $bytes[$pointer] = chr((int)$this->colorType);
-        $pointer++;
-
+        $charWidth = (int)($width / 8);
+        $charHeight = (int)($height / 8);
+        $header = self::HEADER . pack('C3', $charWidth, $charHeight, $this->colorType);
+        $output = [];
         for ($charY = 0; $charY < $charHeight; $charY++) {
             for ($charX = 0; $charX < $charWidth; $charX++) {
-                for ($rowsCounter = 0; $rowsCounter < 8; $rowsCounter++) {
-                    $byteText = '';
-                    for ($bitsCounter = 0; $bitsCounter < 8; $bitsCounter++) {
-                        $byteText .= $pixels[$charY * 8 + $rowsCounter][$charX * 8 + $bitsCounter];
+                for ($row = 0; $row < 8; $row++) {
+                    $y = $charY * 8 + $row;
+                    $byte = 0;
+                    for ($bit = 0; $bit < 8; $bit++) {
+                        $x = $charX * 8 + $bit;
+                        $byte = ($byte << 1) | (int)$pixels[$y][$x];
                     }
-                    $bytes[$pointer] = chr((int)bindec($byteText));
-                    $pointer++;
+                    $output[] = chr($byte);
                 }
-                $bytes[$pointer] = chr((int)bindec($attributes[$charY][$charX]));
-                $pointer++;
+                $attrByte = 0;
+                $attrStr = $attributes[$charY][$charX];
+                for ($i = 0; $i < 8; $i++) {
+                    $attrByte = ($attrByte << 1) | (int)$attrStr[$i];
+                }
+                $output[] = chr($attrByte);
             }
         }
-        return $bytes;
+        return $header . implode('', $output);
     }
 }
