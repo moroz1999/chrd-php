@@ -113,7 +113,7 @@ class PaletteReducer
         }
 
         usort($usedColors, function ($a, $b) {
-            return count($b) - count($a);
+            return $b['count'] - $a['count'];
         });
         $minColor = null;
         $maxColor = array_shift($usedColors)['code'];
